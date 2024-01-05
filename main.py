@@ -48,7 +48,6 @@ def run_stAA(adata, n_clusters, graph_mode="knn", cluster_method="mclust",
         Spatial_Dis_Cal(adata, rad_dis=graph_mode)
 
     if 'Spatial_Net' not in adata.uns.keys():
-        # 验证是否存在Spatial_Net
         raise ValueError(
             "Please Compute Spatial Network using Spatial_Dis_Cal function first!")
     # Process the data
