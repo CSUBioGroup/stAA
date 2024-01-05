@@ -99,22 +99,21 @@ def Spatial_Dis_Cal(adata, rad_dis=None, knn_dis=None, model='Radius', verbose=T
     -------
     The spatial networks are saved in adata.uns['Spatial_Net']
     """
-    assert(model in ['Radius', 'KNN', "BallTree"]) #断言语句，可以用来调试程序。
+    assert(model in ['Radius', 'KNN', "BallTree"]) 
     if verbose:
         print('------Calculating spatial graph...')
-    coor = pd.DataFrame(adata.obsm['spatial']) #Spot 空间坐标
-    coor.index = adata.obs.index #df的index改为spot名称
+    coor = pd.DataFrame(adata.obsm['spatial'])
+    coor.index = adata.obs.index 
     # coor.columns = ['imagerow', 'imagecol']
-    coor.columns = ['Spatial_X', 'Spatial_Y'] #修改df的列名
+    coor.columns = ['Spatial_X', 'Spatial_Y'] 
 
     if model == 'Radius':
         nbrs = sklearn.neighbors.NearestNeighbors(radius=rad_dis).fit(coor)
         distances, indices = nbrs.radius_neighbors(coor, return_distance=True)
-        # Find the neighbors within a given radius of a point or points, 返回每个Spot在给定半径中的邻居个数及距离。
-        # distances, indices的rows等于Spot的个数，即每个Spot都对应一个distance 和 index list.
+      
         KNN_list = []
         for spot in range(indices.shape[0]):
-            KNN_list.append(pd.DataFrame(zip([spot]*indices[spot].shape[0], indices[spot], distances[spot]))) #每个spot的邻居编号；距离。
+            KNN_list.append(pd.DataFrame(zip([spot]*indices[spot].shape[0], indices[spot], distances[spot])))
     
     if model == 'KNN':
         nbrs = sklearn.neighbors.NearestNeighbors(n_neighbors=knn_dis+1).fit(coor)
@@ -141,12 +140,12 @@ def Spatial_Dis_Cal(adata, rad_dis=None, knn_dis=None, model='Radius', verbose=T
 
     Spatial_Net = KNN_df.copy()
     Spatial_Net = Spatial_Net.loc[Spatial_Net['Distance']>0,]
-    id_spot_trans = dict(zip(range(coor.shape[0]), np.array(coor.index), )) #构建一个词典，
-    Spatial_Net['Spot1'] = Spatial_Net['Spot1'].map(id_spot_trans) #Spot1的编号，e.g. spot1出现几次，表明有几个邻居，在spot2里。
-    Spatial_Net['Spot2'] = Spatial_Net['Spot2'].map(id_spot_trans) #Spot2的编号 spot1对应的邻居编号
+    id_spot_trans = dict(zip(range(coor.shape[0]), np.array(coor.index), ))
+    Spatial_Net['Spot1'] = Spatial_Net['Spot1'].map(id_spot_trans) 
+    Spatial_Net['Spot2'] = Spatial_Net['Spot2'].map(id_spot_trans) 
     if verbose:
-        print('The graph contains %d edges, %d spots.' %(Spatial_Net.shape[0], adata.n_obs)) #共多少条边
-        print('%.4f neighbors per spot on average.' %(Spatial_Net.shape[0]/adata.n_obs)) #平均每个Spot多少条边 
+        print('The graph contains %d edges, %d spots.' %(Spatial_Net.shape[0], adata.n_obs)) 
+        print('%.4f neighbors per spot on average.' %(Spatial_Net.shape[0]/adata.n_obs)) 
     adata.uns['Spatial_Net'] = Spatial_Net
 
 
