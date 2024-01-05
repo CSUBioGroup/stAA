@@ -54,7 +54,7 @@ def read_data(dataset, data_path='/home/sda1/'):
 def process_adata(adata):
     adata.var_names_make_unique()
     #Normalization
-    sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=3000) ##3000高变基因；seurat_v3
+    sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=3000)
     sc.pp.normalize_total(adata, target_sum=1e4) ##normalized data
     sc.pp.log1p(adata)  #log-transformed data
     adata = adata[:, adata.var['highly_variable']]
@@ -90,8 +90,8 @@ def Spatial_Dis_Cal(adata, rad_dis=None, knn_dis=None, model='Radius', verbose=T
     Parameters
     ----------
     adata:  AnnData object of scanpy package.
-    rad_dis:  radius distance when model='Radius' 半径
-    knn_dis:  The number of nearest neighbors when model='KNN' 邻居个数
+    rad_dis:  radius distance when model='Radius' 
+    knn_dis:  The number of nearest neighbors when model='KNN' 
     model:
         The network construction model. When model=='Radius', the spot is connected to spots whose distance is less than rad_dis. 
         When model=='KNN', the spot is connected to its first knn_dis nearest neighbors.
@@ -135,7 +135,7 @@ def Spatial_Dis_Cal(adata, rad_dis=None, knn_dis=None, model='Radius', verbose=T
         #     for j in np.arange(0, indices.shape[1]):
         #         KNN_list.append(node_idx, indices[node_idx][j])
 
-    KNN_df = pd.concat(KNN_list) #变为dataframe格式。
+    KNN_df = pd.concat(KNN_list) 
     KNN_df.columns = ['Spot1', 'Spot2', 'Distance']
 
     Spatial_Net = KNN_df.copy()
